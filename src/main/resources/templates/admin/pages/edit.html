@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+	<head th:replace="/fragments/head"></head>
+	
+	<body>
+	
+		<nav th:replace="/fragments/nav :: nav-admin"></nav>
+	
+		<main class="container">
+	
+			<h1 th:text="'Edit ' + (${pageTitle} ?: ${page.title})" class="display-2"></h1>
+			<a href="/admin/pages" class="btn btn-primary mb-5">Back to pages</a>
+			
+			<div th:if="${message}" th:text="${message}" th:class="${'alert ' + alertClass}"></div>
+			
+			<form th:action="@{/admin/pages/edit}" th:object="${page}" method="post">
+			
+				<div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+					There are errors
+				</div>
+				
+				<div class="form-group">				
+					<label for="">Title:</label>
+					<input type="text" th:field="*{title}" placeholder="Title" class="form-control mb-4 col-4" />
+					<span th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error"></span>				
+				</div>
+				
+				<div class="form-group" th:classappend="${page.slug == 'home'} ? 'd-none': ''">				
+					<label for="">Slug:</label>
+					<input type="text" th:field="*{slug}" th:value="${page.slug}" placeholder="Slug" class="form-control mb-4 col-4" />				
+				</div>
+
+				<div class="form-group">				
+					<label for="">Content:</label>
+					<textarea th:field="*{content}" th:value="${page.content}" rows="10" placeholder="Content" class="form-control mb-4"></textarea>				
+					<span th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="error"></span>				
+				</div>
+				
+				<input type="hidden" th:field="*{id}" th:value="${page.id}"/>
+				<input type="hidden" th:field="*{sorting}" th:value="${page.sorting}"/>
+			
+				<button class="btn btn-danger mb-5">Edit</button>
+				
+			</form>
+			
+	
+		</main><!-- /.container -->
+		
+		<footer th:replace="/fragments/footer"></footer>
+	
+	</body>
+</html>
