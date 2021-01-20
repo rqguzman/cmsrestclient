@@ -18,24 +18,6 @@
 				</li>
 			</ul>
 			
-			<ul th:if="${principal == null}" class="navbar-nav float-right">
-				
-				<li class="nav-item active">
-					<a th:href="@{/register}" class="nav-link">Register</a>
-				</li>
-
-				<li class="nav-item active">
-					<a th:href="@{/login}" class="nav-link">Login</a>
-				</li>
-
-			</ul>
-			
-			<form th:if="${principal != null}" th:action="@{/logout}" method="post">
-			
-				<span th:text="${'Wellcome, ' + principal}" class="text-white"></span>
-				<button class="btn btn-secondary">Logout</button>
-			</form>
-			
 		</div>
 	</div>
 </nav>
