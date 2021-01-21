@@ -9,10 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -117,5 +114,16 @@ public class AdminPagesController {
         }
 
         return "redirect:/admin/pages/edit/" + page.getId();
+    }
+
+    @GetMapping("/delete/{id}")
+    public String delete(@PathVariable int id, RedirectAttributes theAttributes) {
+
+        rest.delete("http://localhost:8080/admin/pages/delete/{id}", id);
+
+        theAttributes.addFlashAttribute("message", "Page deleted");
+        theAttributes.addFlashAttribute("alertClass", "alert-success");
+
+        return "redirect:/admin/pages";
     }
 }
