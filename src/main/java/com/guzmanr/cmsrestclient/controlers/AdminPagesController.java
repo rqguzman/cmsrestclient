@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
@@ -74,5 +75,47 @@ public class AdminPagesController {
         }
 
         return "redirect:/admin/pages/add";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String edit(@PathVariable int id, Model theModel) {
+
+        Page thePage = rest.getForObject("http://localhost:8080/admin/pages/edit/{id}", Page.class, id);
+
+        theModel.addAttribute("page", thePage);
+
+        return "admin/pages/edit";
+    }
+
+    @PostMapping("/edit")
+    public String edit(@Valid Page page, BindingResult theResult, RedirectAttributes theAttributes, Model theModel) {
+
+        Page pageCurrent = repository.getOne(page.getId());
+
+        if (theResult.hasErrors()) {
+            theModel.addAttribute("pageTitle", pageCurrent.getTitle());
+            return "admin/pages/edit";
+        }
+
+        theAttributes.addFlashAttribute("message", "Page edited");
+        theAttributes.addFlashAttribute("alertClass", "alert-success");
+
+        String slug = page.getSlug() == "" ? page.getTitle().toLowerCase().replace(" ", "-")
+                : page.getSlug().toLowerCase().replace(" ", "-");
+
+		Page slugExists = repository.findBySlugAndIdNot(slug, page.getId());
+
+        if (slugExists != null) {
+            theAttributes.addFlashAttribute("message", "Slug exists, please choose another one");
+            theAttributes.addFlashAttribute("alertClass", "alert-danger");
+            theAttributes.addFlashAttribute("page", page);
+
+        } else {
+            page.setSlug(slug);
+
+            rest.put("http://localhost:8080/admin/pages/edit", page);
+        }
+
+        return "redirect:/admin/pages/edit/" + page.getId();
     }
 }
